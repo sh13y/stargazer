@@ -1,0 +1,12 @@
+name = "stargazer"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+# Optional: KV namespace for caching
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = "your-kv-namespace-id"
+
+# Set in CF dashboard or wrangler secret
+# [vars]
+# GITHUB_TOKEN = "your-token-here"
