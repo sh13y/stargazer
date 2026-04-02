@@ -61,8 +61,9 @@ const HTML = `<!DOCTYPE html>
 <title>Stargazer</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#0a0c10;color:#e8eaf0;font-family:system-ui,sans-serif;height:100vh;display:flex;align-items:center;justify-content:center}
-.box{background:#111318;border:1px solid #252830;border-radius:12px;padding:20px 28px;width:340px;text-align:center}
+body{background:#0a0c10;color:#e8eaf0;font-family:system-ui,sans-serif;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+.box{background:rgba(17,19,24,0.95);border:1px solid #252830;border-radius:12px;padding:20px 28px;width:340px;text-align:center;position:relative;z-index:1;backdrop-filter:blur(10px)}
 h1{font-size:18px;margin-bottom:14px}h1 span{color:#f0c040}
 .row{display:flex;gap:8px;margin-bottom:12px}
 input{flex:1;background:#1a1d24;border:1px solid #252830;border-radius:6px;color:#e8eaf0;font-size:13px;padding:8px 10px;outline:none}
@@ -82,6 +83,7 @@ button:hover{opacity:.9}button:disabled{opacity:.4}
 </style>
 </head>
 <body>
+<canvas id="particles"></canvas>
 <div class="box">
   <h1>Star<span>gazer</span></h1>
   <div class="row">
@@ -147,6 +149,43 @@ function copy(){
   setTimeout(()=>el.classList.remove('ok'),1500);
 }
 document.getElementById('user').addEventListener('keydown',e=>{if(e.key==='Enter')go()});
+
+// Particles
+const canvas=document.getElementById('particles');
+const ctx=canvas.getContext('2d');
+let particles=[];
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+for(let i=0;i<80;i++){
+  particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*2+1,dx:(Math.random()-0.5)*0.5,dy:(Math.random()-0.5)*0.5,a:Math.random()*0.5+0.2});
+}
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    p.x+=p.dx;p.y+=p.dy;
+    if(p.x<0||p.x>canvas.width)p.dx*=-1;
+    if(p.y<0||p.y>canvas.height)p.dy*=-1;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle='rgba(240,192,64,'+p.a+')';
+    ctx.fill();
+  });
+  particles.forEach((p,i)=>{
+    for(let j=i+1;j<particles.length;j++){
+      const p2=particles[j];
+      const dist=Math.hypot(p.x-p2.x,p.y-p2.y);
+      if(dist<120){
+        ctx.beginPath();
+        ctx.moveTo(p.x,p.y);
+        ctx.lineTo(p2.x,p2.y);
+        ctx.strokeStyle='rgba(240,192,64,'+(0.15*(1-dist/120))+')';
+        ctx.stroke();
+      }
+    }
+  });
+  requestAnimationFrame(draw);
+}
+draw();
 </script>
 </body>
 </html>`;
